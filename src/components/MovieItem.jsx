@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image, useWindowDimensions} from 'react-native';
 import React, { memo } from 'react';
 import COLORS from '../Constant/Colors';
 import {useNavigation} from '@react-navigation/native';
@@ -13,6 +13,12 @@ function MovieItem({
   first_air_date = '',
 }) {
   const navigation = useNavigation();
+  const { width } = useWindowDimensions();
+
+  const containerWidth = {
+    width: width > 400 ? width / 2 - 80 : width - 40,
+  };
+
   const handlePress = () => {
     navigation.navigate(ROUTES.DETAILS, {
       id: id,
@@ -21,7 +27,9 @@ function MovieItem({
     });
   };
   return (
-    <TouchableOpacity style={styles.container} onPress={handlePress}>
+    <TouchableOpacity
+      style={[styles.container, containerWidth]}
+      onPress={handlePress}>
       {backdrop_path !== null ? (
         <Image
           source={{
@@ -39,7 +47,9 @@ function MovieItem({
           resizeMode="stretch"
         />
       )}
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title} numberOfLines={1}>
+        {title}
+      </Text>
       <View style={styles.innerContainer}>
         {release_date !== '' && <Text>{release_date}</Text>}
         {first_air_date !== '' && <Text>{first_air_date}</Text>}
@@ -58,13 +68,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 10,
     borderRadius: 10,
+    aspectRatio: 1.6
   },
-  banner:{
+  banner: {
+    flex: 1,
     width: '100%',
-    height: 150,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
-    backgroundColor: COLORS.gray
+    backgroundColor: COLORS.gray,
   },
   innerContainer: {
     flexDirection: 'row',

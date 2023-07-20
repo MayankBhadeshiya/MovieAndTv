@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  ScrollView,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useState} from 'react';
 import COLORS from '../Constant/Colors';
@@ -14,8 +16,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import ROUTES from '../Constant/Routes';
 import {useDispatch, useSelector} from 'react-redux';
 import {userActions} from '../Redux/userslice';
+import { windowWidth } from '../Util/Dimensions';
 
 export default function Signup({navigation}) {
+  const {width} = useWindowDimensions();
+  const outercontainer = {
+    width: width > 400 ? 400 : width - 40,
+  };
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,7 +48,7 @@ export default function Signup({navigation}) {
       if (alreadyEmail) {
         setErrmsg('Email already used');
       } else {
-        dispatch(userActions.signup({name, email, password, imageURL:''}));
+        dispatch(userActions.signup({name, email, password, imageURL: ''}));
         navigation.navigate(ROUTES.LOGIN);
         setName('');
         setConfirmpasswod('');
@@ -52,76 +59,83 @@ export default function Signup({navigation}) {
     }
   };
   return (
-    <SafeAreaView>
-      <View style={styles.wView}>
-        <Text style={styles.wText}>Sign Up</Text>
-      </View>
-      <View style={styles.container}>
-        <InputFileds
-          lable={'Full Name'}
-          icon={
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color={COLORS.white}
-              style={styles.icon}></Ionicons>
-          }
-          value={name}
-          onChangeText={text => setName(text)}></InputFileds>
-        <InputFileds
-          lable={'Email ID'}
-          icon={
-            <MaterialIcons
-              name="alternate-email"
-              size={20}
-              color={COLORS.white}
-              style={styles.icon}></MaterialIcons>
-          }
-          keybordType="email-address"
-          value={email}
-          onChangeText={text => setEmail(text)}></InputFileds>
-        <InputFileds
-          lable={'Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color={COLORS.white}
-              style={styles.icon}></Ionicons>
-          }
-          inputType="password"
-          value={password}
-          onChangeText={text => setPassword(text)}></InputFileds>
-        <InputFileds
-          lable={'Confirm Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color={COLORS.white}
-              style={styles.icon}></Ionicons>
-          }
-          inputType="password"
-          value={confirmpasswod}
-          onChangeText={text => setConfirmpasswod(text)}></InputFileds>
-        <View style={styles.buttoncontainer}>
-          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>Sign Up</Text>
+    <ScrollView
+      contentContainerStyle={styles.scrollView}
+      automaticallyAdjustKeyboardInsets={true}>
+      <SafeAreaView style={outercontainer}>
+        <View style={styles.wView}>
+          <Text style={styles.wText}>Sign Up</Text>
+        </View>
+        <View style={styles.container}>
+          <InputFileds
+            lable={'Full Name'}
+            icon={
+              <Ionicons
+                name="person-outline"
+                size={20}
+                color={COLORS.white}
+                style={styles.icon}></Ionicons>
+            }
+            value={name}
+            onChangeText={text => setName(text)}></InputFileds>
+          <InputFileds
+            lable={'Email ID'}
+            icon={
+              <MaterialIcons
+                name="alternate-email"
+                size={20}
+                color={COLORS.white}
+                style={styles.icon}></MaterialIcons>
+            }
+            keybordType="email-address"
+            value={email}
+            onChangeText={text => setEmail(text)}></InputFileds>
+          <InputFileds
+            lable={'Password'}
+            icon={
+              <Ionicons
+                name="ios-lock-closed-outline"
+                size={20}
+                color={COLORS.white}
+                style={styles.icon}></Ionicons>
+            }
+            inputType="password"
+            value={password}
+            onChangeText={text => setPassword(text)}></InputFileds>
+          <InputFileds
+            lable={'Confirm Password'}
+            icon={
+              <Ionicons
+                name="ios-lock-closed-outline"
+                size={20}
+                color={COLORS.white}
+                style={styles.icon}></Ionicons>
+            }
+            inputType="password"
+            value={confirmpasswod}
+            onChangeText={text => setConfirmpasswod(text)}></InputFileds>
+          <View style={styles.buttoncontainer}>
+            <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+              <Text style={styles.buttonText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+          {errmsg !== '' && <Text style={styles.errormsg}>{errmsg}</Text>}
+        </View>
+        <View style={styles.line}>
+          <Text>already have an account ? </Text>
+          <TouchableOpacity onPress={loginnavigationhandler}>
+            <Text style={styles.loginlink}>Login</Text>
           </TouchableOpacity>
         </View>
-        {errmsg !== '' && <Text style={styles.errormsg}>{errmsg}</Text>}
-      </View>
-      <View style={styles.line}>
-        <Text>already have an account ? </Text>
-        <TouchableOpacity onPress={loginnavigationhandler}>
-          <Text style={styles.loginlink}>Login</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    alignItems: 'center',
+  },
   wText: {
     fontSize: 35,
     fontWeight: 'bold',

@@ -6,12 +6,13 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import MovieItem from '../components/MovieItem';
 import COLORS from '../Constant/Colors';
 import { useSelector } from 'react-redux';
-
+import {windowWidth} from "../Util/Dimensions";
 import { getMovieList } from '../API/api';
 
 export default function Movies() {
@@ -72,9 +73,11 @@ export default function Movies() {
   }
 
   return (
-    <View style={style.container}>
+    <SafeAreaView style={style.container}>
       <FlatList
         data={data}
+        contentContainerStyle={style.list}
+        numColumns={windowWidth > 400 ? 2 : 1}
         keyExtractor={item => item.id}
         initialNumToRender={5}
         renderItem={({item}) => (
@@ -88,7 +91,7 @@ export default function Movies() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }></FlatList>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -99,7 +102,9 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  list: {
+    alignItems: 'center',
+  },
   errorcontainer: {
     flex: 1,
     justifyContent: 'center',
@@ -107,5 +112,5 @@ const style = StyleSheet.create({
   },
   errortext: {
     fontSize: 24,
-  }
+  },
 });

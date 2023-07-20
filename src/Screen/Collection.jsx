@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   Image,
   FlatList,
+  SafeAreaView,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {getCollectionDetail} from '../API/api';
@@ -14,6 +16,19 @@ import COLORS from '../Constant/Colors';
 import MovieItem from '../components/MovieItem';
 
 export default function Collection({route, navigation}) {
+  const {width,height} = useWindowDimensions();
+
+  const imageStyle = {
+    width:
+      width / height > 1.778
+        ? (height / 1.5) * 1.778
+        : width,
+    height:
+      width / height > 1.778
+        ? height / 1.5
+        : width / 1.778,
+  };
+
   const {id, title, backdrop_path} = route.params;
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,46 +69,55 @@ export default function Collection({route, navigation}) {
   }
 
   return (
-    <ScrollView>
-      <View style={style.imagecontainer}>
-        {backdrop_path !== null ? (
-          <Image
-            source={{
-              uri: `https://image.tmdb.org/t/p/original/${backdrop_path}`,
-            }}
-            defaultSource={require('../IMG/img.png')}
-            style={style.image}
-            resizeMode="stretch"
-          />
-        ) : (
-          <Image
-            source={require('../IMG/img.png')}
-            defaultSource={require('../IMG/img.png')}
-            style={style.image}
-            resizeMode="stretch"
-          />
+    <SafeAreaView>
+      <FlatList
+        data={data.parts}
+        contentContainerStyle={style.list}
+        ListHeaderComponent={() => (
+          <View>
+            <View style={style.imagecontainer}>
+              {backdrop_path !== null ? (
+                <Image
+                  source={{
+                    uri: `https://image.tmdb.org/t/p/original/${backdrop_path}`,
+                  }}
+                  defaultSource={require('../IMG/img.png')}
+                  style={[style.image, imageStyle]}
+                  resizeMode="stretch"
+                />
+              ) : (
+                <Image
+                  source={require('../IMG/img.png')}
+                  defaultSource={require('../IMG/img.png')}
+                  style={[style.image, imageStyle]}
+                  resizeMode="stretch"
+                />
+              )}
+            </View>
+            <Text style={style.title}>{data.name}</Text>
+            <Text style={style.overview}>{data.overview}</Text>
+          </View>
         )}
-      </View>
-      <Text style={style.title}>{data.name}</Text>
-      <Text style={style.overview}>{data.overview}</Text>
-      <View>
-        {data.parts.map(part => {
-            return (
-              <MovieItem
-                key={part.id}
-                title={part.title}
-                release_date={part.release_date}
-                vote_count={part.vote_count}
-                id={part.id}
-                backdrop_path={part.backdrop_path}></MovieItem>
-            );
-        })}
-      </View>
-    </ScrollView>
+        numColumns={windowWidth > 400 ? 2 : 1}
+        keyExtractor={item => item.id}
+        initialNumToRender={5}
+        renderItem={({item}) => (
+          <MovieItem
+            key={item.id}
+            title={item.title}
+            release_date={item.release_date}
+            vote_count={item.vote_count}
+            id={item.id}
+            backdrop_path={item.backdrop_path}></MovieItem>
+        )}></FlatList>
+    </SafeAreaView>
   );
 }
 
 const style = StyleSheet.create({
+  list: {
+    alignItems: 'center',
+  },
   errorcontainer: {
     flex: 1,
     justifyContent: 'center',
@@ -112,8 +136,6 @@ const style = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: windowWidth,
-    height: windowHeight / 4,
     marginBottom: 10,
     backgroundColor: COLORS.gray,
   },

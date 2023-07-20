@@ -6,12 +6,14 @@ import {
   StyleSheet,
   RefreshControl,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {getTvList} from '../API/api';
 import MovieItem from '../components/MovieItem';
 import COLORS from '../Constant/Colors';
+import { windowWidth } from '../Util/Dimensions';
 
 export default function Tv() {
   const [data, setData] = useState('');
@@ -69,9 +71,11 @@ export default function Tv() {
   }
 
   return (
-    <View style={style.container}>
+    <SafeAreaView style={style.container}>
       <FlatList
         data={data}
+        contentContainerStyle={style.list}
+        numColumns={windowWidth > 400 ? 2 : 1}
         keyExtractor={item => item.id}
         initialNumToRender={5}
         renderItem={({item}) => (
@@ -85,7 +89,7 @@ export default function Tv() {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }></FlatList>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -96,7 +100,9 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  list: {
+    alignItems: 'center',
+  },
   errorcontainer: {
     flex: 1,
     justifyContent: 'center',

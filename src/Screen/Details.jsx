@@ -6,15 +6,24 @@ import {
   ScrollView,
   Linking,
   TouchableOpacity,
+  SafeAreaView,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {ActivityIndicator} from 'react-native';
 import COLORS from '../Constant/Colors';
-import {windowHeight, windowWidth} from '../Util/Dimensions';
 import {getMovieDetail, getMovieProvider, getTvDetail} from '../API/api';
 import ROUTES from '../Constant/Routes';
 
 export default function Details({route, navigation}) {
+  const {height} = useWindowDimensions();
+
+  const imageStyle = {
+    width: height * 0.667 * 0.667,
+    height: height * 0.667,
+  };
+
+
   const {id, title, source} = route.params;
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,193 +83,204 @@ export default function Details({route, navigation}) {
     });
   };
   return (
-    <ScrollView>
-      <View style={styles.imagecontainer}>
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/original/${data.poster_path}`,
-          }}
-          defaultSource={require('../IMG/img.png')}
-          style={styles.image}
-        />
-      </View>
-      {data.tagline !== '' && <Text style={styles.title}>{data.tagline}</Text>}
-      {source === 'Movies' && (
-        <View style={styles.date}>
-          <Text>Global Relese : {data.release_date}</Text>
-          {data.homepage !== '' && (
-            <Text
-              onPress={() => Linking.openURL(`${data.homepage}`)}
-              style={styles.link}>
-              Go to the website
-            </Text>
-          )}
+    <SafeAreaView>
+      <ScrollView>
+        <View style={styles.imagecontainer}>
+          <Image
+            source={{
+              uri: `https://image.tmdb.org/t/p/original/${data.poster_path}`,
+            }}
+            defaultSource={require('../IMG/img.png')}
+            resizeMode="stretch"
+            style={[styles.image, imageStyle]}
+          />
         </View>
-      )}
-      {source === 'TV' && (
-        <View style={styles.date}>
-          <View>
-            <Text>First air Date : {data.first_air_date}</Text>
-            <Text>Last air Date : {data.last_air_date}</Text>
+        {data.tagline !== '' && (
+          <Text style={styles.title}>{data.tagline}</Text>
+        )}
+        {source === 'Movies' && (
+          <View style={styles.date}>
+            <Text>Global Relese : {data.release_date}</Text>
+            {data.homepage !== '' && (
+              <Text
+                onPress={() => Linking.openURL(`${data.homepage}`)}
+                style={styles.link}>
+                Go to the website
+              </Text>
+            )}
           </View>
-          {data.homepage !== '' && (
-            <Text
-              onPress={() => Linking.openURL(`${data.homepage}`)}
-              style={styles.link}>
-              Go to the website
-            </Text>
-          )}
-        </View>
-      )}
-      {source === 'TV' && (
-        <View style={styles.totalSeasons}>
-          {data.number_of_seasons !== '' && (
-            <Text>Total Seasons : {data.number_of_seasons}</Text>
-          )}
-        </View>
-      )}
-      {data.genres.length > 0 && (
-        <View style={styles.ItemContainer}>
-          <Text>Genres : </Text>
-          <View style={styles.ItemList}>
-            {data.genres.map(l => (
-              <View key={l.id} style={styles.item}>
-                <Text style={styles.ItemText}>{l.name}</Text>
-              </View>
-            ))}
+        )}
+        {source === 'TV' && (
+          <View style={styles.date}>
+            <View>
+              <Text>First air Date : {data.first_air_date}</Text>
+              <Text>Last air Date : {data.last_air_date}</Text>
+            </View>
+            {data.homepage !== '' && (
+              <Text
+                onPress={() => Linking.openURL(`${data.homepage}`)}
+                style={styles.link}>
+                Go to the website
+              </Text>
+            )}
           </View>
-        </View>
-      )}
-      {data.spoken_languages.length > 0 && (
-        <View style={styles.ItemContainer}>
-          <Text>Spoken Languages : </Text>
-          <View style={styles.ItemList}>
-            {data.spoken_languages.map(l => (
-              <View key={l.english_name} style={styles.item}>
-                <Text style={styles.ItemText}>{l.english_name}</Text>
-              </View>
-            ))}
+        )}
+        {source === 'TV' && (
+          <View style={styles.totalSeasons}>
+            {data.number_of_seasons !== '' && (
+              <Text>Total Seasons : {data.number_of_seasons}</Text>
+            )}
           </View>
-        </View>
-      )}
-      {data.production_companies.length > 0 && (
-        <View style={styles.ItemContainer}>
-          <Text>Production companies : </Text>
-          <View style={styles.ItemList}>
-            {data.production_companies.map(l => (
-              <View key={l.name} style={styles.item}>
-                <Text style={styles.ItemText}>{l.name}</Text>
-              </View>
-            ))}
+        )}
+        {data.genres.length > 0 && (
+          <View style={styles.ItemContainer}>
+            <Text>Genres : </Text>
+            <View style={styles.ItemList}>
+              {data.genres.map(l => (
+                <View key={l.id} style={styles.item}>
+                  <Text style={styles.ItemText}>{l.name}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      )}
-      {source === 'Movies' && data.belongs_to_collection !== null && (
-        <TouchableOpacity
-          style={styles.collectionbutton}
-          onPress={handlePress.bind(this, data.belongs_to_collection)}>
-          <Text style={styles.collectionText}>Go to the Collection</Text>
-        </TouchableOpacity>
-      )}
-      {data.overview !== '' && <Text style={styles.overview}>{data.overview}</Text>}
-      {source === 'TV' && (
-        <View style={styles.seasonsContainer}>
-          <Text style={styles.seasonsText}>Latest Seasons :</Text>
-          <ScrollView horizontal={true}>
-            {data.seasons
-              .reverse()
-              .slice(0, 10)
-              .map(s => (
-                <View key={s.id} style={styles.seasonsItem}>
-                  {s.poster_path !== null ? (
+        )}
+        {data.spoken_languages.length > 0 && (
+          <View style={styles.ItemContainer}>
+            <Text>Spoken Languages : </Text>
+            <View style={styles.ItemList}>
+              {data.spoken_languages.map(l => (
+                <View key={l.english_name} style={styles.item}>
+                  <Text style={styles.ItemText}>{l.english_name}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+        {data.production_companies.length > 0 && (
+          <View style={styles.ItemContainer}>
+            <Text>Production companies : </Text>
+            <View style={styles.ItemList}>
+              {data.production_companies.map(l => (
+                <View key={l.name} style={styles.item}>
+                  <Text style={styles.ItemText}>{l.name}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+        {source === 'Movies' && data.belongs_to_collection !== null && (
+          <TouchableOpacity
+            style={styles.collectionbutton}
+            onPress={handlePress.bind(this, data.belongs_to_collection)}>
+            <Text style={styles.collectionText}>Go to the Collection</Text>
+          </TouchableOpacity>
+        )}
+        {data.overview !== '' && (
+          <Text style={styles.overview}>{data.overview}</Text>
+        )}
+        {source === 'TV' && (
+          <View style={styles.seasonsContainer}>
+            <Text style={styles.seasonsText}>Latest Seasons :</Text>
+            <ScrollView horizontal={true}>
+              {data.seasons
+                .reverse()
+                .slice(0, 10)
+                .map(s => (
+                  <View key={s.id} style={styles.seasonsItem}>
+                    {s.poster_path !== null ? (
+                      <Image
+                        source={{
+                          uri: `https://image.tmdb.org/t/p/original/${s.poster_path}`,
+                        }}
+                        defaultSource={require('../IMG/img.png')}
+                        style={styles.seasonsPoster}
+                        resizeMode="stretch"
+                      />
+                    ) : (
+                      <Image
+                        source={require('../IMG/img.png')}
+                        defaultSource={require('../IMG/img.png')}
+                        style={styles.seasonsPoster}
+                        resizeMode="stretch"
+                      />
+                    )}
+                    <Text>{s.name}</Text>
+                    <Text>Ep : {s.episode_count}</Text>
+                  </View>
+                ))}
+            </ScrollView>
+          </View>
+        )}
+        {data.networks && data.networks.length > 0 && (
+          <View style={styles.ItemContainer}>
+            <Text>Networks : </Text>
+            <View style={styles.ItemList}>
+              {data.networks.map(l => (
+                <View key={l.name} style={styles.networkitem}>
+                  <Image
+                    source={{
+                      uri: `https://image.tmdb.org/t/p/original/${l.logo_path}`,
+                    }}
+                    resizeMode="contain"
+                    defaultSource={require('../IMG/img.png')}
+                    style={styles.networkimage}
+                  />
+                  <Text style={styles.networkItemText}>{l.name}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+        {provider &&
+          Object.keys(provider).includes('rent') &&
+          provider.rent.length > 0 && (
+            <View style={styles.ItemContainer}>
+              <Text>Rent on : </Text>
+              <View style={styles.ItemList}>
+                {provider.rent.map(l => (
+                  <View key={l.provider_id} style={styles.networkitem}>
                     <Image
                       source={{
-                        uri: `https://image.tmdb.org/t/p/original/${s.poster_path}`,
+                        uri: `https://image.tmdb.org/t/p/original/${l.logo_path}`,
                       }}
+                      resizeMode="contain"
                       defaultSource={require('../IMG/img.png')}
-                      style={styles.seasonsPoster}
-                      resizeMode="stretch"
+                      style={styles.networkimage}
                     />
-                  ) : (
-                    <Image
-                      source={require('../IMG/img.png')}
-                      defaultSource={require('../IMG/img.png')}
-                      style={styles.seasonsPoster}
-                      resizeMode="stretch"
-                    />
-                  )}
-                  <Text>{s.name}</Text>
-                  <Text>Ep : {s.episode_count}</Text>
-                </View>
-              ))}
-          </ScrollView>
-        </View>
-      )}
-      {data.networks && data.networks.length > 0 && (
-        <View style={styles.ItemContainer}>
-          <Text>Networks : </Text>
-          <View style={styles.ItemList}>
-            {data.networks.map(l => (
-              <View key={l.name} style={styles.networkitem}>
-                <Image
-                  source={{
-                    uri: `https://image.tmdb.org/t/p/original/${l.logo_path}`,
-                  }}
-                  resizeMode="contain"
-                  defaultSource={require('../IMG/img.png')}
-                  style={styles.networkimage}
-                />
-                <Text style={styles.networkItemText}>{l.name}</Text>
+                    <Text style={styles.networkItemText}>
+                      {l.provider_name}
+                    </Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        </View>
-      )}
-      {provider &&
-        Object.keys(provider).includes('rent') &&
-        provider.rent.length > 0 && (
-          <View style={styles.ItemContainer}>
-            <Text>Rent on : </Text>
-            <View style={styles.ItemList}>
-              {provider.rent.map(l => (
-                <View key={l.provider_id} style={styles.networkitem}>
-                  <Image
-                    source={{
-                      uri: `https://image.tmdb.org/t/p/original/${l.logo_path}`,
-                    }}
-                    resizeMode="contain"
-                    defaultSource={require('../IMG/img.png')}
-                    style={styles.networkimage}
-                  />
-                  <Text style={styles.networkItemText}>{l.provider_name}</Text>
-                </View>
-              ))}
             </View>
-          </View>
-        )}
-      {provider &&
-        Object.keys(provider).includes('buy') &&
-        provider.buy.length > 0 && (
-          <View style={styles.ItemContainer}>
-            <Text>Buy on : </Text>
-            <View style={styles.ItemList}>
-              {provider.buy.map(l => (
-                <View key={l.provider_id} style={styles.networkitem}>
-                  <Image
-                    source={{
-                      uri: `https://image.tmdb.org/t/p/original/${l.logo_path}`,
-                    }}
-                    resizeMode="contain"
-                    defaultSource={require('../IMG/img.png')}
-                    style={styles.networkimage}
-                  />
-                  <Text style={styles.networkItemText}>{l.provider_name}</Text>
-                </View>
-              ))}
+          )}
+        {provider &&
+          Object.keys(provider).includes('buy') &&
+          provider.buy.length > 0 && (
+            <View style={styles.ItemContainer}>
+              <Text>Buy on : </Text>
+              <View style={styles.ItemList}>
+                {provider.buy.map(l => (
+                  <View key={l.provider_id} style={styles.networkitem}>
+                    <Image
+                      source={{
+                        uri: `https://image.tmdb.org/t/p/original/${l.logo_path}`,
+                      }}
+                      resizeMode="contain"
+                      defaultSource={require('../IMG/img.png')}
+                      style={styles.networkimage}
+                    />
+                    <Text style={styles.networkItemText}>
+                      {l.provider_name}
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
-          </View>
-        )}
-    </ScrollView>
+          )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -270,8 +290,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {
-    width: windowWidth,
-    height: (windowHeight * 2) / 3,
     marginBottom: 10,
     backgroundColor: COLORS.gray,
   },
@@ -360,11 +378,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  seasonsText:{
-    marginBottom:5
+  seasonsText: {
+    marginBottom: 5,
   },
-  seasonsItem:{
-    marginHorizontal: 10
+  seasonsItem: {
+    marginHorizontal: 10,
   },
   seasonsPoster: {
     backgroundColor: COLORS.gray,
