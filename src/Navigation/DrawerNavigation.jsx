@@ -6,19 +6,23 @@ import Profile from '../Screen/Profile';
 import COLORS from '../Constant/Colors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import CustomDrawer from '../components/CustomDrawer';
 import TabNavigation from './TabNavigation';
+import {useWindowDimensions} from 'react-native';
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigation() {
+  const {width} = useWindowDimensions();
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawer {...props}></CustomDrawer>}
       screenOptions={{
         drawerActiveTintColor: COLORS.primary,
         headerTintColor: COLORS.primary,
-        headerTitleStyle: {color: COLORS.black},
+        headerTitleStyle: {
+          color: COLORS.black,
+          fontSize: width > 850 ? 30 : 20,
+        },
       }}>
       <Drawer.Screen
         name="tab nav"

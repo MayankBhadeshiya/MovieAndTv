@@ -7,13 +7,13 @@ import {
   RefreshControl,
   ScrollView,
   SafeAreaView,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
 import {getTvList} from '../API/api';
 import MovieItem from '../components/MovieItem';
 import COLORS from '../Constant/Colors';
-import { windowWidth } from '../Util/Dimensions';
 
 export default function Tv() {
   const [data, setData] = useState('');
@@ -21,6 +21,13 @@ export default function Tv() {
   const [refreshing, setRefreshing] = useState(true);
   const [page, setPage] = useState(1);
   const connected = useSelector(state => state.userReducer.conection);
+  const {width} = useWindowDimensions();
+  let col = 1;
+  if (width > 400 && width <= 1025) {
+    col = 2;
+  } else if (width > 1025) {
+    col = 3;
+  }
 
   useEffect(() => {
     if (connected && refreshing) {
@@ -75,7 +82,8 @@ export default function Tv() {
       <FlatList
         data={data}
         contentContainerStyle={style.list}
-        numColumns={windowWidth > 400 ? 2 : 1}
+        key={col}
+        numColumns={col}
         keyExtractor={item => item.id}
         initialNumToRender={5}
         renderItem={({item}) => (

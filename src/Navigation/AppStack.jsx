@@ -1,4 +1,4 @@
-import {View, Text} from 'react-native';
+import {View, Text, useWindowDimensions} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Details from '../Screen/Details';
@@ -11,11 +11,15 @@ import Collection from '../Screen/Collection';
 const Stack = createNativeStackNavigator();
 
 export default function AppStack() {
+  const {width} = useWindowDimensions();
   return (
     <Stack.Navigator
       screenOptions={{
         headerTintColor: COLORS.primary,
-        headerTitleStyle: {color: COLORS.black},
+        headerTitleStyle: {
+          color: COLORS.black,
+          fontSize: width > 850 ? 30 : 20,
+        },
       }}>
       <Stack.Screen
         name="Tab Nav"
@@ -24,7 +28,11 @@ export default function AppStack() {
       />
       <Stack.Screen name={ROUTES.DETAILS} component={Details} />
       <Stack.Screen name={ROUTES.PROFILE} component={Profile} />
-      <Stack.Screen name={ROUTES.COLLECTION} component={Collection} options={{headerBackTitleVisible: false}}/>
+      <Stack.Screen
+        name={ROUTES.COLLECTION}
+        component={Collection}
+        options={{headerBackTitleVisible: false}}
+      />
     </Stack.Navigator>
   );
 }

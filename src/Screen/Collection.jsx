@@ -11,23 +11,22 @@ import {
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {getCollectionDetail} from '../API/api';
-import {windowHeight, windowWidth} from '../Util/Dimensions';
 import COLORS from '../Constant/Colors';
 import MovieItem from '../components/MovieItem';
 
 export default function Collection({route, navigation}) {
-  const {width,height} = useWindowDimensions();
+  const {width, height} = useWindowDimensions();
 
   const imageStyle = {
-    width:
-      width / height > 1.778
-        ? (height / 1.5) * 1.778
-        : width,
-    height:
-      width / height > 1.778
-        ? height / 1.5
-        : width / 1.778,
+    width: width / height > 1.778 ? (height / 1.5) * 1.778 : width,
+    height: width / height > 1.778 ? height / 1.5 : width / 1.778,
   };
+  let col = 1;
+  if (width > 400 && width <= 1025) {
+    col = 2;
+  } else if (width > 1025) {
+    col = 3;
+  }
 
   const {id, title, backdrop_path} = route.params;
   useLayoutEffect(() => {
@@ -98,7 +97,8 @@ export default function Collection({route, navigation}) {
             <Text style={style.overview}>{data.overview}</Text>
           </View>
         )}
-        numColumns={windowWidth > 400 ? 2 : 1}
+        numColumns={col}
+        key={col}
         keyExtractor={item => item.id}
         initialNumToRender={5}
         renderItem={({item}) => (

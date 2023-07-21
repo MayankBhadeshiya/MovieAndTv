@@ -7,13 +7,13 @@ import {
   RefreshControl,
   ScrollView,
   SafeAreaView,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import MovieItem from '../components/MovieItem';
 import COLORS from '../Constant/Colors';
-import { useSelector } from 'react-redux';
-import {windowWidth} from "../Util/Dimensions";
-import { getMovieList } from '../API/api';
+import {useSelector} from 'react-redux';
+import {getMovieList} from '../API/api';
 
 export default function Movies() {
   const [data, setData] = useState('');
@@ -21,36 +21,40 @@ export default function Movies() {
   const [refreshing, setRefreshing] = useState(true);
   const [page, setPage] = useState(1);
   const connected = useSelector(state => state.userReducer.conection);
-
+  const {width} = useWindowDimensions();
+  let col = 1;
+  if (width > 400 && width <= 1025) {
+    col = 2;
+  } else if (width > 1025) {
+    col = 3;
+  }
   useEffect(() => {
     if (connected && refreshing) {
-      async function get(){
+      async function get() {
         const movies = await getMovieList(page);
         setRefreshing(false);
-        if(movies === 'noData') {
-          setError(true)
-        }else{
-          setError(false)
-          if(page === 1){
+        if (movies === 'noData') {
+          setError(true);
+        } else {
+          setError(false);
+          if (page === 1) {
             setData(movies.results);
             setPage(prev => prev + 1);
-          }
-          else if(page >= 30){
-            return
-          }
-          else{
-            setData(prev => [...movies.results,...prev])
+          } else if (page >= 30) {
+            return;
+          } else {
+            setData(prev => [...movies.results, ...prev]);
             setPage(prev => prev + 1);
           }
         }
       }
       get();
     }
-  }, [connected,refreshing]);
+  }, [connected, refreshing]);
 
   const onRefresh = () => {
-    setRefreshing(true);   
-  }
+    setRefreshing(true);
+  };
 
   if (error) {
     return (
@@ -77,7 +81,8 @@ export default function Movies() {
       <FlatList
         data={data}
         contentContainerStyle={style.list}
-        numColumns={windowWidth > 400 ? 2 : 1}
+        key={col}
+        numColumns={col}
         keyExtractor={item => item.id}
         initialNumToRender={5}
         renderItem={({item}) => (

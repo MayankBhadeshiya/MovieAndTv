@@ -15,8 +15,16 @@ function MovieItem({
   const navigation = useNavigation();
   const { width } = useWindowDimensions();
 
+  let cwidth = width - 40
+  if(width > 400 && width <= 1025){
+    cwidth = width / 2 - 80;
+  }
+  else if(width > 1025){
+    cwidth = width / 3 - 80;
+  }
+
   const containerWidth = {
-    width: width > 400 ? width / 2 - 80 : width - 40,
+    width: cwidth,
   };
 
   const handlePress = () => {
